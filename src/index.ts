@@ -43,19 +43,19 @@ fastify.post('/webhook', async (request, reply) => {
         
         // ASYNC DECOUPLING: Fire and forget the background worker, do not wait for it.
         processImageWorker(mediaId, sender, messageId).catch((err) => 
-          fastify.log.error(`Worker error for message ${messageId}:`, err)
+          fastify.log.error({ err, messageId }, 'Image worker failed')
         );
       } else if (message.type === 'text') {
         const textBody = message.text.body;
         fastify.log.info(`Received text payload: "${textBody}" from ${sender}`);
         
         processTextWorker(textBody, sender, messageId).catch((err) =>
-          fastify.log.error(`Text worker error for message ${messageId}:`, err)
+          fastify.log.error({ err, messageId }, 'Text worker failed')
         );
       }
     }
   } catch (error) {
-    fastify.log.error('Failed to parse webhook payload structural components:', error);
+    fastify.log.error({ err: error }, 'Failed to parse webhook payload structural components');
   }
 
   // Always return 200 OK instantly back to Meta within 3 seconds 
