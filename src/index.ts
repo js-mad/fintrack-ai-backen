@@ -90,6 +90,3 @@ const start = async () => {
 
 
 start();
-
-git config --global user.name "js-mad"
-git config --global user.email "k.p.tech024@gmail.com"
