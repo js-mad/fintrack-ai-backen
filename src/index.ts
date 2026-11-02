@@ -4,18 +4,22 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const fastify = Fastify({ logger: true });
-const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'my_fintrack_secret_token';
+const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN?.trim();
+
+if (!VERIFY_TOKEN) {
+  throw new Error('WHATSAPP_VERIFY_TOKEN must be configured');
+}
 
 // --- 1. WEBHOOK VERIFICATION (The Meta Handshake) ---
 // Meta sends a GET request to verify your endpoint exists and is secure.
 fastify.get('/webhook', async (request, reply) => {
   const query = request.query as {
     'hub.mode'?: string;
-    'hub.token'?: string;
+    'hub.verify_token'?: string;
     'hub.challenge'?: string;
   };
 
-  if (query['hub.mode'] === 'subscribe' && query['hub.token'] === VERIFY_TOKEN) {
+  if (query['hub.mode'] === 'subscribe' && query['hub.verify_token'] === VERIFY_TOKEN) {
     fastify.log.info('Webhook verified successfully by Meta.');
     return reply.type('text/plain').send(query['hub.challenge']);
   }
