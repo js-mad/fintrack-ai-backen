@@ -31,6 +31,7 @@ fastify.get('/webhook', async (request, reply) => {
 // Meta sends a POST request whenever a user messages your WhatsApp bot.
 fastify.post('/webhook', async (request, reply) => {
   const payload = request.body as any;
+  fastify.log.info({ webhookPayload: payload }, 'Received WhatsApp webhook POST');
 
   try {
     const entry = payload?.entry?.[0]?.changes?.[0]?.value;
