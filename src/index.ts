@@ -10,6 +10,8 @@ if (!VERIFY_TOKEN) {
   throw new Error('WHATSAPP_VERIFY_TOKEN must be configured');
 }
 
+fastify.get('/', async () => ({ status: 'ok' }));
+
 // --- 1. WEBHOOK VERIFICATION (The Meta Handshake) ---
 // Meta sends a GET request to verify your endpoint exists and is secure.
 fastify.get('/webhook', async (request, reply) => {
