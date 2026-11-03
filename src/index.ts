@@ -39,11 +39,11 @@ fastify.post('/webhook', async (request, reply) => {
     if (message) {
       const sender = message.from;
       const messageId = message.id;
+      fastify.log.info({ message }, 'Received WhatsApp message');
 
       // Deep parsing of heterogeneous inputs
       if (message.type === 'image') {
         const mediaId = message.image.id;
-        fastify.log.info(`Received image payload (ID: ${mediaId}) from ${sender}`);
         
         // ASYNC DECOUPLING: Fire and forget the background worker, do not wait for it.
         processImageWorker(mediaId, sender, messageId).catch((err) => 
@@ -51,7 +51,6 @@ fastify.post('/webhook', async (request, reply) => {
         );
       } else if (message.type === 'text') {
         const textBody = message.text.body;
-        fastify.log.info(`Received text payload: "${textBody}" from ${sender}`);
         
         processTextWorker(textBody, sender, messageId).catch((err) =>
           fastify.log.error({ err, messageId }, 'Text worker failed')
